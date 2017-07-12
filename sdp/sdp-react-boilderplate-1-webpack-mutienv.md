@@ -165,6 +165,8 @@ debugging 用工具, 共分为如下几种
 
     来看叫脚手架, 在非生产的环境下, `publicPath` 为 `assets/`, 所以devServer 运行时打包生成的文件路径就会在 `http://localhost:8080/assets/`
 
+---
+
 #### `'dev', 'dev-ie8', 'dist', 'test'`
 
 根据 `env` 的不同取4个不同的环境.

@@ -232,3 +232,7 @@ debugging 用工具, 共分为如下几种
     1. `preLoaders` 下的 `isparta-instrumenter-loader` 用于统计测试覆盖率
 
     2. `externals`
+
+    此处用语配置外部的依赖, 在这里配置的对象在通过`require`或者 `import` 引入使用的时候, 不会被webpack打包到最终文件中.
+
+    典型的例如页面上已经引入了CDN 上的 `jQuery`, 使用同一的范式引入 `jQuery` 而不会打包到最后的 bundle 文件中

@@ -38,15 +38,51 @@
 
 2. coverageReporter
 
-    测试覆盖率报告生成方式
+    测试覆盖率报告生成配置
 
 ### 入口文件 `test/index.js` 分析
 
+```js
+// 引入 babel 的 polyfill 脚本文件, 已兼容旧浏览器部分方法的缺失
+require('babel-polyfill')
+// 引入 Object.assign 方法
+require('core-js/fn/object/assign')
+// 引入多语言方案 intl
+global.Intl = require('intl')
+require('intl/locale-data/jsonp/zh')
+require('intl/locale-data/jsonp/en')
+```
 
+其中`Intl` 是ES 标准多语言解决方案, 具体可以参考 [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl), 此处不展开
 
-## mocha
+---
 
-## chai
+```js
+// chai 断言库
+import chai from 'chai'
+import chaiEnzyme from 'chai-enzyme'
+
+chai.use(chaiEnzyme())
+```
+
+enzyme ([http://airbnb.io/enzyme/](http://airbnb.io/enzyme/)) 是用于React测试的实用工具库, 包含很多测试React的工具方法等.
+
+引入[`chaiEnzyme`](https://github.com/producthunt/chai-enzyme)后, `chai.use`给`chai`补充了`enzyme`断言方法.
+
+---
+
+```js
+const testsContext = require.context('.', true, /(\.test\.js$)|(Helper\.js$)/)
+testsContext.keys().forEach(testsContext)
+```
+
+这里使用了 webpack 内置的方法 [`require.context`](https://webpack.github.io/docs/context.html#require-context) 获取某个路径下的上下文对象`testsContext`.
+
+`testsContext` 本身传入一个路径可以加载指定的模块, 因此这里通过 `testsContext.keys().forEach(testsContext)` 加载这个路径下的所有文件.
+
+### `sinon` 辅助测试工具库
+
+三个核心概念: **spy, stub, mock**
 
 ## 单元测试
 

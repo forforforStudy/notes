@@ -24,7 +24,7 @@
 
 2. webpack
 
-    安装 `karma-webpack` 后在这里引入webpack的配置文件, 就可以在karam下对要测试的文件进行webpack的预处理操作.
+    安装 `karma-webpack` 后在这里引入webpack的配置文件挂在`webpack`字段下, 就可以在karam下对要测试的文件进行webpack的预处理操作.
 
     可以在另一处的配置 `preprocessors` 中看到
 

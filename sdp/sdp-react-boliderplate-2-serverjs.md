@@ -22,7 +22,7 @@ const config = require('./webpack.config');
 const compiler = webpack(config);
 ```
 
-2. 随后, 通过 express 创建一个web服务. express 可以看成nodejs下的类似tomcat的web应用服务框架.
+2. 随后, 通过 express 创建一个web服务. express 可以看成nodejs下的类似java中struts/springmvc的web应用服务框架.
 创建完成web应用实例后, 调用 `app.use` 为其添加各种类型的中间件, 可以用来对各种请求的处理等.
 框架中的中间件如下有:
 

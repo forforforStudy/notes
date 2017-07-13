@@ -177,11 +177,11 @@ debugging 用工具, 共分为如下几种
 
     1. `webpack-hot-middleware/client?reload=true`
 
-        引入这个脚本旧可以让页面与服务建立自动热部署的链接, 当文件更新修改后该脚本就能嗅探到从而进行热部署或者自动刷新
+        引入这个脚本就可以让页面与服务建立自动热部署的链接, 当文件更新修改后该脚本就能嗅探到从而进行热部署或者自动刷新
 
     2. `./src/index`
 
-配置中使用的 plguins 为官方要求的三个插件, 其中 `OccurenceOrderPlugin` 用于根据使用的次数自动分配id, 使用次数越多, 分配的id越小
+配置中使用的 plugins 为官方要求的三个插件, 其中 `OccurenceOrderPlugin` 用于根据使用的次数自动分配id, 使用次数越多, 分配的id越小
 
 ```js
   plugins: [

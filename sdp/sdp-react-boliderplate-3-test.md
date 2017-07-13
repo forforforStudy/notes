@@ -82,7 +82,19 @@ testsContext.keys().forEach(testsContext)
 
 ### `sinon` 辅助测试工具库
 
-三个核心概念: **spy, stub, mock**
+三个核心概念: **spy, stub, mock**, 这里简单过一下:
+
+- [spy](http://sinonjs.org/releases/v2.3.7/spies/)
+
+`sinon.spy` 用于包裹某个方法, 类似于加一层代理. 这层代理会记录调用的参数, 被调用次数, 返回值, 调用的异常等等
+
+- [stub](http://sinonjs.org/releases/v2.3.7/stubs/)
+
+`stub`桩业实现了`spy`的能力, 作为被测对象在测试过程中需要能感知到的一个功能或一段代码.
+
+- [mock](http://sinonjs.org/releases/v2.3.7/mocks/)
+
+`mock` 作为一个虚假的功能代码, 能按照测试的意愿返回指定需要的信息.
 
 ## 单元测试
 

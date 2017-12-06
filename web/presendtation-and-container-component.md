@@ -89,8 +89,6 @@
 
 重构是一个行进的过程, 所以不需要一开始就尝试. 随着这种模式的尝试, 你会培养出一种何时可以提取容器组件的直接, 就像你知道何时提取一个函数. 
 
-
-
 > Other Dichotomies
 > It’s important that you understand that the distinction between the presentational components and the containers is not a technical one. Rather, it is a distinction in their purpose.
 
@@ -113,3 +111,15 @@
 从 `React` **0.14**  之后, 组件可以同个 `classes` 或者 `functions`来声明. 函数式的组件声明定义更简单, 但是它们缺少一些只能通过 `classes` 声明才能使用的特性. 一些限制条件未来可能会移除, 但当下还是存在. 因为函数式的组件更容易理解, 我建议除非你需要 `state`, `lifecycle`, `hooks` 或者性能优化这些只能在`classes`才拥有的特性时, 使用函数型组件.
 
 - **Pure and Impure**
+
+所谓的纯组件是能保证同样的 `props` 和 `state` 返回相同的结果。纯组件既可以定义成类也可以定义成行数, 并且可以是有状态或者无状态的。另一个重要的概念是纯组件不依赖`props` 或者 `state` 的深层次变化, 所以他们的渲染性能能通过sholudComponentUpdate浅比较得到优化
+
+当前 `sholudComponentUpdate` 只能通过类声明组件的方式定义
+
+> Both presentational components and containers can fall into either of those buckets. In my experience, presentational components tend to be stateless pure functions, and containers tend to be stateful pure classes. However this is not a rule but an observation, and I’ve seen the exact opposite cases that made sense in specific circumstances.
+
+无论展示型组件还是容器型组件都可以按这几种分型，在我的经验中，展示型组件倾向于无状态纯行数， 容器型组件倾向于有状态的纯类组件。然而这不是一个规则而是一种观察，我也在一些特殊的场景下看到确切相反的案例
+
+> Don’t take the presentational and container component separation as a dogma. Sometimes it doesn’t matter or it’s hard to draw the line. If you feel unsure about whether a specific component should be presentational or a container, it might be too early to decide. Don’t sweat it!
+
+不要教条式的区分展示型组件和容器型组件，有时候它不是必要和困难的将其划线关联。如果你不确定一个组件是展示型还是容器型的，那可能是你太早去确定了，打住吧

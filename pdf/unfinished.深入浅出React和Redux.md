@@ -60,6 +60,138 @@ react 的树对比的时间复杂度是 O(N), 它是性能和时间复杂度的�
 
 > [https://github.com/reactjs/reselect](https://github.com/reactjs/reselect)
 
----
+## 高阶组件
 
-至此书本125页
+实现高阶组件的方式有两种:
+
+1. 代理方式
+2. 继承方式
+
+### 代理方式的高阶组件
+
+其应用场景有如下几种:
+
+- 操纵 `props`
+
+    高阶组件可以增减删除修改传递给包裹组件的`props`列表, 书中给出了如下的例子用于显示
+
+```js
+const addNewProps = (WrappedComponent, newProps) => {
+    return class WrappingComponent extends React.Component {
+        render() {
+            return <WrappingComponent {...this.props} {...newProps}>
+        }
+    }
+}
+```
+
+- 访问 `ref`
+
+- 抽取状态
+
+`react-redux` 的 `connect` 代用后返回的就是一个高阶组件函数, 它的功能就是抽取状态
+
+> 书中提到了一点, 通过调用 `this.setState({})` 可以去驱动组件执行一个更新过程
+
+一个简易的 `connect` 函数调用返回的高阶组件可能是下面这样:
+
+```js
+render() {
+    const store = this.context.store
+    const newProps = {
+        ...this.props,
+        ...mapStateToProps(store.getState())
+        ...maoDispatchToProp(store.dispatch)
+    }
+
+    return <WrappingComponent {...newProps} />
+}
+```
+
+这里其实也算是在操纵 `props` 了.
+
+- 包装组件
+
+给组件包裹添加补充样式是这类方式的常用场景:
+
+```js
+const styleHOC = (WrappingComponent, style) => {
+    return class HOCComponent extends React.Component {
+        render() {
+            return <div style={style}>
+                <WrappingComponent {...this.props} />
+            </div>
+        }
+    }
+}
+```
+
+### 继承方式 (反向继承)
+
+有个比较大的区别在于: **代理方式下产生的新组建和参数组件是两个不同的组件, 一次渲染两个组件都要经历各自的生命周期. 而在继承方式下只有一个生命周期**
+
+也有集中应用场景:
+
+1. 操作 `props`
+
+书中给了如下例子:
+
+```js
+const modifyPropsHOC = WrappedComponent => {
+    return class NewComponent extends WrappedComponent {
+        render() {
+            const elements = super.render()
+            const newStyle = {
+                color: (elements && elements.type === 'div') ? 'red' : 'green'
+            }
+            const newProps = { ...this.props, style: newStyle}
+
+            return React.cloneElement(elements, newProps, elements.props.children)
+        }
+    }
+}
+```
+
+一般不需要这么写, 应该直接用代理的方式操纵 `props` 即可
+
+2. 操纵生命周期
+
+这个是代理方式无法实现的功能: 操作组件的什么周期函数. 例如让一个组件只有在用户登录时才显示
+
+#### 高阶组件名称
+
+通过给高阶组件(返回的组件) 添加 `displayName` 字段属性用于在 `debug` 时能显示组件的名称
+
+### 以函数为子组件
+
+上述的高阶组件存在缺点: 对原组件的`props`有了固化的要求.
+
+所以有另一种复用的方式: **以函数为子组件**.
+
+此模式下, 要求组件必须有子组件存在, 而且这个子组件必须是一个函数,  在生命周期中, `this.props.children` 引用的就是子组件, `render` 函数会直接把 `this.props.children` 当做函数来调用,
+得到的结果作为 `render` 函数的返回结果的一部分
+
+这样就可以抛开具体的 `props` 名称的限制进行复用, 书上给的例子如下:
+
+```js
+import loggedinUser = 'mock user'
+// 复用组件
+class AddUserProp extends React.Component {
+    render() {
+        const user = loggedinUser
+        return this.props.children(user)
+    }
+}
+AddUserProp.propTypes = {
+    children: React.PropTypes.func.isRequired
+}
+
+// 被增强的组件
+<AddUserProp>
+    {
+        user => <Bar currentUser={user} />
+    }
+</AddUserProp>
+```
+
+--- PAGE 154

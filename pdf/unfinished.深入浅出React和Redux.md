@@ -194,4 +194,31 @@ AddUserProp.propTypes = {
 </AddUserProp>
 ```
 
---- PAGE 154
+> 在 `react-motion` 中就大量用到了 **"以函数为子组件"** 的模式
+
+#### 性能问题
+
+函数为子组件的方式, 难以优化性能. 因为它的每次渲染都要调用函数而无法避免使用 `shouldComponentUpdate` 来避免渲染浪费
+
+所以这边的策略是对外部的组件做性能优化, 控制其 `sholudComponentUpdate` 的执行结果, 例如上面例子中的 `AddUserProp` 组件
+
+## Redux 和服务器通信
+
+### redux-thunk
+
+在一个 `action` 对象通过 `store.dispatch` 派发后, 在调用 `reducer` 函数之前会经过一个中间件的环节, 在这里可以产生一个异步操作的机会.
+
+#### 异步 action 对象
+
+当 `action` 对象是一个函数时, redux-thunk 会检查 `action` 是否是函数, 如不是函数就继续下发下一个中间件或者返回中间件的执行流程.
+如果发现 `action` 是函数那就执行这个函数, 并把`store` 的 `dispatch` 方法和 `getState` 函数作为参数传递给这个函数, 处理过程中止, 不会继续派发到 `reducer` 函数中
+
+#### 异步操作的模式
+
+一个异步应该有三种状态:
+
+1. 异步操作正在进行
+2. 操作完成
+3. 操作失败
+
+所以, 为异步模式下我们需要定义三种 `action` 类型, 代表上诉的三种状态.

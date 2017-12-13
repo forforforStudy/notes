@@ -222,3 +222,51 @@ AddUserProp.propTypes = {
 3. 操作失败
 
 所以, 为异步模式下我们需要定义三种 `action` 类型, 代表上诉的三种状态.
+
+#### 中断异步请求
+
+比如全局遮罩, 或者冻结操作变更可以便面异步数据前后到达不一致, 但体验存在问题.
+
+书中给出的方案, 提供一个模块级别的序列号, 每次的异步请求自增+1, 在每次 `dispatch` 之前, 校验序列号是否匹配, 如果不匹配就不进行 `dispatch` 的转发.  
+
+#### 其它异步方法
+
+- redux-sage
+- redux-effects
+- redux-side-effects
+- redux-look
+- redux-observable
+
+- redux-promise
+
+`promise` 这是另一种异步方式, 将 `Promise` 作为特殊处理的异步`action`对象
+
+## 单元测试
+
+不同角度的测试, 可以分为多个类型
+
+- 手工测试和自动化测试
+- 白盒测试和黑盒测试
+- 单元测试, 集成测试和端到端测试
+- 功能测试, 性能测试和压力测试
+
+好的单元测试用例名遵循: (它) 在什么样的情况下是什么行为
+
+### 使用 `Enzyme` 进行 react 组件的测试
+
+有三种渲染方式测试
+
+1. shallow 方式渲染, 一般用于无状态的组件测试
+2. mount 方式渲染
+3. render 方式渲染
+
+#### 被连接 `connect` 的react组件测试
+
+### 使用 `redux-mock-store` + `sinon` 进行异步 `action` 的测试
+
+使用 `redux-mock-store` 模拟简易的 `redux` 的 store
+
+使用 `sinon` 库篡改函数的行为
+
+--- 
+PAGE 190

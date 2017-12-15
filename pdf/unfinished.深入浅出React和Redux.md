@@ -262,11 +262,68 @@ AddUserProp.propTypes = {
 
 #### 被连接 `connect` 的react组件测试
 
+这类组件需要依赖于一个 `sotre` 实例, 而且能够实实在在提供内容, 书中给出一个简单的示例: 
+
+```js
+const store = createStore(
+    combineReducers({
+        todos: todosReducer,
+        filter: filterReducer
+    }), {
+        todos: [],
+        filter: FilterTypes.ALL
+    }
+)
+```
+
+上面创造了一个实际的 `store`. 下一步需要创造 `Provider` 注入到 `store`
+
+```js
+const subject = <Provider store={store}>
+    <TodoList />
+</Provider>
+
+// 挂载 subject dom
+const wrapper = mount(subject)
+
+// 通过 `store.dispatch` 函数派发 `action`
+store.dispatch(actions.addTodo('write more test`));
+// 验证 wrapper 对象上的渲染元素是否发生预期的改变
+expect(wrapper.find('.text').text()).toEqual('write more test');
+```
+
 ### 使用 `redux-mock-store` + `sinon` 进行异步 `action` 的测试
 
 使用 `redux-mock-store` 模拟简易的 `redux` 的 store
 
 使用 `sinon` 库篡改函数的行为
 
---- 
-PAGE 190
+## 拓展Redux
+
+### 中间件
+
+抽象的理解成: 处理请求的管道, 有以下的特点:
+
+1. 独立的函数, 没有互相依赖
+2. 可以组合使用, 中间件按照指定顺序一次处理传入的 `action`, 只有但前面的中间件完成任务后, 后面的中间件才有机会继续处理 `action`
+3. 统一的接口
+
+#### `redux` 中间件
+
+一个啥事没做的中间件如下:
+
+```js
+function doNothingMiddleware ({dispatch, getState}) {
+    return function (next) {
+        return function (action) {
+            return next(action)
+        }
+    }
+}
+
+const doNothingMiddleware = ({dispatch, getState}) => next => action => next(action)
+```
+
+`next` 方法用语表示当前的中间件完成了自己的功能, 把控制权交给下一个中间件
+
+### Store Enhancer

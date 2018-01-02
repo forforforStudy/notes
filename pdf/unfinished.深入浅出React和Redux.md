@@ -327,3 +327,32 @@ const doNothingMiddleware = ({dispatch, getState}) => next => action => next(act
 `next` 方法用语表示当前的中间件完成了自己的功能, 把控制权交给下一个中间件
 
 ### Store Enhancer
+
+极简的 `enhance` 可能是下面这样:
+
+```js
+const nothingEnhancer = (createStore) => (reducer, preLoadedState, enhance) => {
+    const store = createStore(reducer, preLoadedState, enhance)
+    return store
+}
+```
+
+`enhancer` 增强的重点都在于如何定制产生 `store` 对象, 而 `store` 对象有如下的几个接口:
+
+- `dispatch`
+- `subscribe`
+- `getState`
+- `replaceReducer`
+
+可以装饰方法增强方法的能力, 最后再调用原有的函数.
+
+## react 动画
+
+### 动画的实现方式
+
+#### CSS3 方式
+即依赖 CSS3 的 `transition` 语法, 让规则作用在指定的 `DOM` 上
+
+优势在于性能, 但是因为是浏览器 CSS 控制, 所以当动画开始时无法执行中断
+
+#### 脚本方式

@@ -356,3 +356,66 @@ const nothingEnhancer = (createStore) => (reducer, preLoadedState, enhance) => {
 优势在于性能, 但是因为是浏览器 CSS 控制, 所以当动画开始时无法执行中断
 
 #### 脚本方式
+
+劣势也在于性能不好, 出现卡顿滞后等现象, 动画不流畅等. 但是灵活性更好, 可控性更强.
+
+### `react-addons-css-transition-group` 库
+
+用于帮助 `react` 应用实现动画效果, 主要是结合 `react` 的生命周期使用尤其是装载和卸载过程时使用, 对于更新过程并不是这个库所在解决的问题.
+
+#### 使用方式
+
+```js
+const TodoList = (todos) =>{
+    return (
+        <ul>
+            <TransitionGroup transitionName='fade' transitionEnterTimeout={500} transitionLeaveTimeout={200}>
+                {
+                    todos.map(todo => (
+                        <TodoItem key={item.id} id={item.id} text={item.text} completed={item.completed} />
+                    ))
+                }
+            </TransitionGroup>
+        </ul>
+    )
+}
+```
+
+其中比较重要的是 `transitionName` 属性, 它关联了 `TransitionGroup` 和 CSS 规则, 上面例子中的 `fade` 代表所有跟这个相关动画的 CSS 类的前缀都是 `fade`
+
+因此这里还需要导入对应的 css 文件: 
+
+```css
+.fade-enter {
+    opacity: 0.01
+}
+
+.fade-enter.fade-enter-active {
+    opacity: 1
+    transition:opacity 500ms ease-in
+}
+
+.fade-leave {
+    opacity: 1
+}
+
+.fade-leave.fade-leave-active {
+    opacity: 0.01
+    transition: opacity 200ms ease-in
+}
+```
+
+- 一般而言定义的类名是上面四个后缀, 由 `enter`/`leave` 定义初始状态, 由对应的 `active` 定义结束状态, 这样有个前后的差异, 才能让 CSS3 以 `transition` 方式实现动画
+`TransitionGroup` 会先加上 `fade-enter` 类, 在下一个时钟周期加上 `fade-enter-active`, 从而引起转化过程产生动画. 同理 `leave` 作为卸载组件时调用
+
+- `transitionEnterTimeout` 和 `transitionLeaveTimeout` 一般而言应该与 CSS3 动画定义的 `transition-duration` 保持一致, 不然会产生一种突变的效果
+
+- 装载时, `TransitionGroup` 总是包住整个集合, 如上包住 `<ul>` 标签, 而不是单个对 `<TodoItem>` 进行包裹, 这里的原因是因为 `TransitionGroup` 产生动画必须
+等到 `TransitionGroup` 自身装载完毕才能发挥作用, 所以必须要先于动画的组件渲染.
+
+- 在首次装载过程时, `enter` 过程并不包括 `TransitionGroup` 的首次装载, 因此与 `TransitionGroup` 一同实例化的子组件是没有动画效果的, 要实现出现时的效果需要加入
+`appear` 过程. 
+
+    1. 开启 `appear` 过程, 即设置 `props` 的 `transitionAppear` 值为 `true` 
+    2. 定义动画类 `.fade-appear.fade-appear-active`
+

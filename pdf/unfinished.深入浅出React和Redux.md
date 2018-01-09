@@ -419,3 +419,12 @@ const TodoList = (todos) =>{
     1. 开启 `appear` 过程, 即设置 `props` 的 `transitionAppear` 值为 `true` 
     2. 定义动画类 `.fade-appear.fade-appear-active`
 
+### `React-Motion` 动画库
+
+这个库是用脚本的方式实现的, 书中提出了一点: **友好的API比性能更重要, 性能并不会因为采用了脚本方式不用CSS3方式二引起显著的性能下降**
+
+`React-Motion` 有两个概念: **刚度 stiffness** 和 **阻尼 damping**
+
+详细的展开放在这里吧: [https://github.com/chenglou/react-motion](https://github.com/chenglou/react-motion)
+
+核心的几个对象包括: `spring` 函数 ( 用于产生动画属性的开始和结束状态 ) 和 `TransitionMotion` 组件, 用于处理装载过程和卸载过程, 类似上面的 `TransitionGroup` 组件.

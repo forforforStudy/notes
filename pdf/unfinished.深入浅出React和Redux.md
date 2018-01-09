@@ -428,3 +428,99 @@ const TodoList = (todos) =>{
 详细的展开放在这里吧: [https://github.com/chenglou/react-motion](https://github.com/chenglou/react-motion)
 
 核心的几个对象包括: `spring` 函数 ( 用于产生动画属性的开始和结束状态 ) 和 `TransitionMotion` 组件, 用于处理装载过程和卸载过程, 类似上面的 `TransitionGroup` 组件.
+
+## 多页面应用
+
+### 单页应用
+
+1. 不同页面之间的切换不会造成网页的刷新
+
+2. 页面内容和 URL 保持一致
+
+3. 可收藏性, 即复制出一段 URL 到地址栏打开能显示之前相同的页面内容
+
+### `React-Router`
+
+每个 URL 分为 **域名部分** 和 **路径部分**, 决定一个 URL 显示内容的只有路径部分, 和域名端口并没有关系
+
+#### 路由
+
+`React-Router` 来看, 每一个页面其实就是一个大的 React 组件, 当然这个㢟可以包含很多子组件来构成一个复杂的页面.
+
+- `Router`
+
+    整个应用只需要一个实例, 代表整个路由器. `Router` 的子组件只能是 `Route` 和 `IndexRoute`
+
+- `Route`
+
+    代表每一个路径对应的页面路由规则, 一个应用一般有多个 `Route` 实例
+
+- `Link`
+
+    用于路由链接, 点击 `Link` 组件不会引起网页跳转, 而是被 `Link` 截获把目标路径发送给 `Router` 路由器处理切换路由的组件显示.
+
+- `history`
+    
+    用于管理 js 应用会话历史的库提供历史堆栈, 导航, 调整, 后退等统一的 api, , `history` 分为三种: `browserHistory`, `hashHistory`, `memoryHistory`
+
+    > 相关内容:
+    > [https://zhuanlan.zhihu.com/p/20799258?refer=jscss](https://zhuanlan.zhihu.com/p/20799258?refer=jscss)
+    > [https://segmentfault.com/a/1190000010251949](https://segmentfault.com/a/1190000010251949)
+
+- `IndexRoute` 
+
+    默认路由, 用于标明当该层路径未空时的默认显示组件
+
+书中给出如下例子: 
+
+```js
+const App = ({ children }) => {
+    return <div>
+        <TopMenu />
+        <div>
+            { children }
+        </div>
+    </div>
+}
+
+const Routes = () => <Router history={history}>
+    <Route path='/' component={App}>
+        <Route path='home' component={Home}></Route>
+        <Route path='about' component={About}></Route>
+        <Route path='*' component={NotFound}></Route>
+    </Route>
+</Router>
+```
+
+`React-Router` 会根据路径匹配层级, 先渲染外层的组件, 然后把内层的 `Route` 组件作为 `children` 属性传递给外层组件.
+
+在上面的例子中, 在渲染`App`组件时, 渲染 `children` 属性就会把内部的 `Home` 组件渲染出来, 这种就是路由的嵌套. 每一层的 `Route` 只决定到这一层的路径, 而非整个路径.
+
+#### 与 `Redux` 的集成
+
+**`react-router-redux`** 库: 用于同步浏览器 `URL` 和 `Redux` 的状态, 它需要这么些事配合: 
+
+1. 需要存入路由信息, 如下
+
+```js
+import { routerReducer } from 'react-router-redux'
+const reducer = combineReducers({
+    routing: routerReducer
+})
+```
+
+2. 调整 `history` 对象能够协同 `URL` 和 `Store` 上的状态, 当 `URL` 发生变化的时候会向 `store` 派发 `action` 对象, 相反当 `routing` 发生变化的时候会更新浏览器 `URL`, 例如:
+
+```js
+import { syncHistoryWithStore } from 'react-router-redux'
+const history = syncHistoryWithStore(history, store)
+```
+
+在 **redux-devtools** 上可以看到有个 `@@router/LOCATION_CHANGE` 的 `action` 被派发
+
+### 代码分片
+
+多概念性东西, 这里提出一点
+
+`CommonsChunkPlugin` 会提取出所有分片中的共同代码. 这里 `CommonsChunkPlugin` 不展开, 这里提出一个比较好的说明: [https://github.com/creeperyang/blog/issues/37](https://github.com/creeperyang/blog/issues/37)
+

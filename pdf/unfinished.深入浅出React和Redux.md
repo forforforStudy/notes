@@ -524,3 +524,63 @@ const history = syncHistoryWithStore(history, store)
 
 `CommonsChunkPlugin` 会提取出所有分片中的共同代码. 这里 `CommonsChunkPlugin` 不展开, 这里提出一个比较好的说明: [https://github.com/creeperyang/blog/issues/37](https://github.com/creeperyang/blog/issues/37)
 
+### 动态加载分片
+
+#### `require.ensure`
+
+当 `webpack` 解析到 `require.ensure` 函数时会特殊处理, 产生一个 **动态分片**
+
+分为三个参数
+
+1. 一个数组, 表示加载的依赖关系
+
+2. 函数, 当第一个参数内标明的模块都已经被加载后, 调用参数二的函数
+
+3. 字符串, 表示分片的模块名. 会对应到配置的 `chunkFilename` 中的 `[name]` 值, 如果没有传会给每个模块分配一个数字代表唯一 ID 作为 chunk 的名字
+ 
+组合成一个简单的例子如下:
+
+```js
+const getPageComponent = (location, callback) => {
+    require.ensure([], function (require) {
+        // null 表示没有错误, require('.page/Home').default 表示加载成功后的组件
+        callback(null, require('./page/Home.js').default)
+    }, 'home')
+}
+```
+
+#### `React-Router` 的 `getComponent` 方法
+
+方法接受两个参数, `nextState` 代表匹配到当前 `Route` 的信息, 第二个是回调函数, 遵从 NodeJS 风格, 第一个参数表示是否有错误, 第二个代表装载成功的组件.
+
+异步加载了对应组件之后调用这个回调函数.
+
+#### 动态更新 `Store` 的 `reducer` 状态
+
+动态分片后, 包含模块的 `reducer` 也会分配到不用的分片中, 所以在切换路由动态加载组件的时候, 还需要加载模块对应的 **`reducer`**
+
+关键点在于使用 `store.replaceReducer` 方法, 保存初始的 `reducer` 合并到新路由下的 `reducer`, 替换整个 `store` 下的 `reducer`
+
+## 同构
+
+同构指: 功能组件即能在浏览器端渲染也可以在服务端渲染产生 `HTML`
+
+书中给出基于 `express` 的两个中间件: `webpack-dev-middleware` 和 `webpack-hot-middleware` 实现.
+
+### `webpack-hot-middleware`
+
+其工作原理是让网页建立一个 `websocket` 链接到服务器地址 `/_webpack_hmr`, 每次有代码文件发生改变的时候, 就会有消息推送到网页中, 网页就会发起请求获取更新内容.
+
+### 服务端渲染
+
+服务端直接使用 `ReactDOMServer.renderToString(<RootComponent />)` 渲染出 HTML 字符串
+
+这里有个要点: **服务端渲染后产生的 HTML 到浏览器后, 依然要执行 `React` 浏览器端渲染.**
+
+虽然做了一步看似浪费的动作, 但因为服务端已经渲染完了, 所以用户的感知速度是很快的. 上述行为的原因在与让 `react` 有前端的交互能力, 而不是只停留在 `HTML` 静态文本上
+
+为了避免不必要的 DOM 操作, 服务端会在渲染生成 `HTML` 计算校验和并存放在根节点的属性 `data-react-checksum` 上, 用于在客户端计算出预期的 DOM 树后记性比较, 
+若相同就没有操作 DOM 的必要, 否则用浏览器端产生的 DOM 树. 一般都应该让服务端和客户端的产生的 `React` 组件代码是一致的.
+
+#### 脱水 与 注水
+

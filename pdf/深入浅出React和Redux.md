@@ -584,3 +584,15 @@ const getPageComponent = (location, callback) => {
 
 #### 脱水 与 注水
 
+服务端渲染生成 HTML, 同时还需要给予脱水的数据. 浏览器渲染时, 就可以直接根据脱水数据来渲染 React 组件了
+
+常用方式就是服务端返回的 HTML 上内嵌一段 JavaScript 代码, React 就可以直接拉取的数据注入
+
+比如:
+
+```html
+<div id="root"><%- appHtml %></div>
+<script>
+  var DEHYDRATED_STAE = <%- dehydratedState %>
+</script>
+```
